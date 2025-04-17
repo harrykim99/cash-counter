@@ -1,1 +1,144 @@
-<h1>Canadian Cash Counter</h1>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cash Counter</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#003366" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      position: relative;
+    }
+
+    .reset-icon {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 1.5em;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #666;
+    }
+
+    h1 {
+      text-align: center;
+      color: #003366;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      margin-top: 30px;
+    }
+
+    th, td {
+      border: 2px solid #000;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #ccc;
+    }
+
+    input[type="number"] {
+      width: 60px;
+      padding: 4px;
+    }
+
+    #total {
+      margin-top: 20px;
+      font-size: 1.4em;
+      text-align: center;
+      font-weight: bold;
+      color: #003366;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="reset-icon" onclick="resetInputs()" title="Reset">🔄</button>
+
+  <h1>Cash Counter</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Unit</th>
+        <th>Roll</th>
+        <th>Count</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody id="cash-table">
+    </tbody>
+  </table>
+
+  <div id="total">Total: $0.00</div>
+
+  <script>
+    const denominations = [
+      { label: "$100.00", value: 100, rollValue: null },
+      { label: "$50.00", value: 50, rollValue: null },
+      { label: "$20.00", value: 20, rollValue: null },
+      { label: "$10.00", value: 10, rollValue: null },
+      { label: "$5.00", value: 5, rollValue: null },
+      { label: "$2.00", value: 2, rollValue: 25 },
+      { label: "$1.00", value: 1, rollValue: 25 },
+      { label: "$0.25", value: 0.25, rollValue: 40 },
+      { label: "$0.10", value: 0.10, rollValue: 50 },
+      { label: "$0.05", value: 0.05, rollValue: 40 }
+    ];
+
+    const tableBody = document.getElementById("cash-table");
+
+    denominations.forEach((denom, index) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${denom.label}</td>
+        <td><input type="number" min="0" id="roll-${index}" ${denom.rollValue ? '' : 'disabled'} oninput="calculateTotal()" /></td>
+        <td><input type="number" min="0" id="count-${index}" oninput="calculateTotal()" /></td>
+        <td id="amount-${index}">$0.00</td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+    function calculateTotal() {
+      let total = 0;
+      denominations.forEach((denom, index) => {
+        const roll = parseInt(document.getElementById(`roll-${index}`).value) || 0;
+        const count = parseInt(document.getElementById(`count-${index}`).value) || 0;
+        let amount = denom.rollValue ? (roll * denom.rollValue * denom.value + count * denom.value) : (count * denom.value);
+        document.getElementById(`amount-${index}`).innerText = `$${amount.toFixed(2)}`;
+        total += amount;
+      });
+      document.getElementById("total").innerText = `Total: $${total.toFixed(2)}`;
+    }
+
+    function resetInputs() {
+      denominations.forEach((_, index) => {
+        const rollInput = document.getElementById(`roll-${index}`);
+        if (rollInput && !rollInput.disabled) rollInput.value = '';
+        document.getElementById(`count-${index}`).value = '';
+        document.getElementById(`amount-${index}`).innerText = '$0.00';
+      });
+      document.getElementById("total").innerText = "Total: $0.00";
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('Service Worker Registered'));
+    }
+  </script>
+
+</body>
+</html>
