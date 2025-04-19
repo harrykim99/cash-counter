@@ -17,27 +17,39 @@
       position: relative;
     }
 
-    .reset-icon {
+    .icon-button {
       position: absolute;
       top: 10px;
-      left: 10px;
-      font-size: 1.5em;
-      background: none;
+      width: 32px;
+      height: 32px;
       border: none;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
       cursor: pointer;
-      color: #666;
+    }
+
+    .undo-btn {
+      left: 10px;
+      background-image: url('icon-undo.png');
+    }
+
+    .reset-btn {
+      right: 10px;
+      background-image: url('icon-erase.png');
     }
 
     h1 {
       text-align: center;
       color: #003366;
+      margin-top: 50px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       background-color: white;
-      margin-top: 30px;
+      margin-top: 20px;
     }
 
     th, td {
@@ -56,17 +68,26 @@
     }
 
     #total {
-      margin-top: 20px;
-      font-size: 1.4em;
-      text-align: center;
+      font-size: 1.2em;
+      text-align: right;
       font-weight: bold;
       color: #003366;
+      margin-top: 10px;
+    }
+
+    .footer {
+      text-align: right;
+      margin-top: 20px;
+      font-size: 0.8em;
+      font-style: italic;
+      color: #888;
     }
   </style>
 </head>
 <body>
 
-  <button class="reset-icon" onclick="resetInputs()" title="Reset">🔄</button>
+  <button class="icon-button undo-btn" onclick="restoreLast()" title="Undo"></button>
+  <button class="icon-button reset-btn" onclick="resetInputs()" title="Reset"></button>
 
   <h1>Cash Counter</h1>
 
@@ -85,6 +106,8 @@
 
   <div id="total">Total: $0.00</div>
 
+  <div class="footer">Programed by Harry Kim</div>
+
   <script>
     const denominations = [
       { label: "$100.00", value: 100, rollValue: null },
@@ -98,6 +121,8 @@
       { label: "$0.10", value: 0.10, rollValue: 50 },
       { label: "$0.05", value: 0.05, rollValue: 40 }
     ];
+
+    let lastInputs = [];
 
     const tableBody = document.getElementById("cash-table");
 
@@ -114,9 +139,13 @@
 
     function calculateTotal() {
       let total = 0;
+      lastInputs = [];
       denominations.forEach((denom, index) => {
-        const roll = parseInt(document.getElementById(`roll-${index}`).value) || 0;
-        const count = parseInt(document.getElementById(`count-${index}`).value) || 0;
+        const rollInput = document.getElementById(`roll-${index}`);
+        const countInput = document.getElementById(`count-${index}`);
+        const roll = parseInt(rollInput.value) || 0;
+        const count = parseInt(countInput.value) || 0;
+        lastInputs.push({ roll: rollInput.value, count: countInput.value });
         let amount = denom.rollValue ? (roll * denom.rollValue * denom.value + count * denom.value) : (count * denom.value);
         document.getElementById(`amount-${index}`).innerText = `$${amount.toFixed(2)}`;
         total += amount;
@@ -132,6 +161,17 @@
         document.getElementById(`amount-${index}`).innerText = '$0.00';
       });
       document.getElementById("total").innerText = "Total: $0.00";
+    }
+
+    function restoreLast() {
+      if (!lastInputs.length) return;
+      denominations.forEach((_, index) => {
+        const rollInput = document.getElementById(`roll-${index}`);
+        const countInput = document.getElementById(`count-${index}`);
+        if (rollInput && !rollInput.disabled) rollInput.value = lastInputs[index].roll;
+        countInput.value = lastInputs[index].count;
+      });
+      calculateTotal();
     }
 
     if ('serviceWorker' in navigator) {
