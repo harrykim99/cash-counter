@@ -89,7 +89,10 @@
   <button class="icon-button undo-btn" onclick="restoreLast()" title="Undo"></button>
   <button class="icon-button reset-btn" onclick="resetInputs()" title="Reset"></button>
 
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 50px;">
   <h1>Cash Counter</h1>
+  <div id="total" style="font-size: 1.2em; font-weight: bold; color: #003366;">Total: $0.00</div>
+</div>
 
   <table>
     <thead>
@@ -106,7 +109,7 @@
 
   <div id="total">Total: $0.00</div>
 
-  <div class="footer">Programed by Harry Kim</div>
+  <div class="footer" style="margin-top: 10px;">Programed by Harry Kim</div>
 
   <script>
     const denominations = [
