@@ -67,17 +67,17 @@
       padding: 4px;
     }
 
-    #total {
+    .total-top {
       font-size: 1.2em;
-      text-align: right;
       font-weight: bold;
       color: #003366;
-      margin-top: 10px;
+      text-align: right;
+      margin-bottom: -10px;
     }
 
     .footer {
       text-align: right;
-      margin-top: 20px;
+      margin-top: 10px;
       font-size: 0.8em;
       font-style: italic;
       color: #888;
@@ -89,10 +89,10 @@
   <button class="icon-button undo-btn" onclick="restoreLast()" title="Undo"></button>
   <button class="icon-button reset-btn" onclick="resetInputs()" title="Reset"></button>
 
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 50px;">
-  <h1>Cash Counter</h1>
-  <div id="total" style="font-size: 1.2em; font-weight: bold; color: #003366;">Total: $0.00</div>
-</div>
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 50px;">
+    <h1>Cash Counter</h1>
+    <div id="total" class="total-top">Total: $0.00</div>
+  </div>
 
   <table>
     <thead>
@@ -103,13 +103,10 @@
         <th>Amount</th>
       </tr>
     </thead>
-    <tbody id="cash-table">
-    </tbody>
+    <tbody id="cash-table"></tbody>
   </table>
 
-  <div id="total">Total: $0.00</div>
-
-  <div class="footer" style="margin-top: 10px;">Programed by Harry Kim</div>
+  <div class="footer">Programed by Harry Kim</div>
 
   <script>
     const denominations = [
